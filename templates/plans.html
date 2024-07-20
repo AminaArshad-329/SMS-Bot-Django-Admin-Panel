@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Plans Management{% endblock %}
+
+{% block header_title %}Plans{% endblock %}
+
+{% block date_filter_action %}{% url 'plans_management' %}{% endblock %}
+
+{% block content %}
+<section class="stats">
+    <div class="stat-card">
+        <h3>Total Plans</h3>
+        <p>{{ total_plans|default_if_none:"0" }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Active Plans</h3>
+        <p>{{ active_plans|default_if_none:"0" }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Expired Plans</h3>
+        <p>{{ expired_plans|default_if_none:"0" }}</p>
+    </div>
+</section>
+<section class="table-section">
+    <form method="post" action="{% url 'plans_management' %}">
+        {% csrf_token %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in page_obj %}
+                <tr>
+                    <td>{{ plan.id }}</td>
+                    <td>{{ plan.name }}</td>
+                    <td>{{ plan.description }}</td>
+                    <td><input type="text" name="price_{{ plan.id }}" value="{{ plan.price }}" class="form-control"></td>
+                    <td><input type="text" name="duration_{{ plan.id }}" value="{{ plan.duration_in_days }}" class="form-control"></td>
+                    <td>
+                        <select name="status_{{ plan.id }}" class="form-control">
+                            <option value="False" {% if not plan.inactive %}selected{% endif %}>Active</option>
+                            <option value="True" {% if plan.inactive %}selected{% endif %}>Inactive</option>
+                        </select>
+                    </td>
+                    <td>{{ plan.created_at }}</td>
+                    <td>
+                        <button type="submit" name="save_{{ plan.id }}" class="btn btn-primary">Save</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </form>
+</section>
+{% endblock %}

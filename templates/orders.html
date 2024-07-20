@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}Orders Management{% endblock %}
+
+{% block header_title %}Orders Management{% endblock %}
+
+{% block form_action %}{% url 'orders_management' %}{% endblock %}
+
+{% block content %}
+<section class="stats">
+    <div class="stat-card">
+        <h3>Total Orders</h3>
+        <p>{{ total_orders|default_if_none:"0" }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Pending Orders</h3>
+        <p>{{ pending_orders|default_if_none:"0" }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Completed Orders</h3>
+        <p>{{ completed_orders|default_if_none:"0" }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Orders by Status</h3>
+        <div class="chart">{{ plot_orders_by_status|safe }}</div>
+    </div>
+</section>
+<br>
+<section class="table-section">
+    <h3>Order List</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>User</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Payment Method</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in page_obj %}
+            <tr>
+                <form method="post" action="{% url 'orders_management' %}">
+                    {% csrf_token %}
+                    <td>{{ order.id }}</td>
+                    <td>{{ order.user.username }}</td>
+                    <td>${{ order.amount }}</td>
+                    <td>
+                        <select name="status" class="form-control">
+                            {% for value, display in statuses %}
+                            <option value="{{ value }}" {% if order.status == value %}selected{% endif %}>{{ display }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                    </td>
+                    <td>{{ order.created_at }}</td>
+                    <td>{{order.payment_gateway.name}}</td>
+                    <td>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Users Management{% endblock %}
+
+{% block header_title %}Users{% endblock %}
+
+{% block content %}
+<section class="table-section">
+    <form method="post" action="{% url 'users_management' %}">
+        {% csrf_token %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Location</th>
+                    <th>Interests</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in page_obj %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td><input type="text" name="first_name_{{ user.id }}" value="{{ user.first_name }}" class="form-control"></td>
+                    <td><input type="text" name="last_name_{{ user.id }}" value="{{ user.last_name }}" class="form-control"></td>
+                    <td><input type="text" name="email_{{ user.id }}" value="{{ user.email }}" class="form-control"></td>
+                    <td>{% if user.location %}{{ user.location }}{% endif %}</td>
+                    <td>
+                        <ul>
+                            {% for interest in user.interests.all %}
+                            <li>
+                                {{ interest.name }}
+                                    <button type="submit" style="background: none;border: none;" name="remove_interest" value="{{ user.id }}-{{ interest.id }}">
+                                        <i class="bi bi-trash text-danger" style="cursor:pointer;"></i>
+                                    </button>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <input type="text" name="new_interest_{{ user.id }}" class="form-control" placeholder="Add new interest">
+                    </td>
+                    <td>
+                        <button type="submit" name="save_{{ user.id }}" class="btn btn-primary">Save</button>
+                        <button type="submit" name="add_interest_{{ user.id }}" class="btn btn-secondary">Add Interest</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </form>
+</section>
+{% endblock %}

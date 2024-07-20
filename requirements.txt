@@ -1,0 +1,9 @@
+asgiref==3.8.1
+Django==5.0.6
+django-rest-framework==0.1.0
+djangorestframework==3.15.1
+packaging==24.0
+plotly==5.22.0
+sqlparse==0.5.0
+tenacity==8.3.0
+tzdata==2024.1

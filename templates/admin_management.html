@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Management{% endblock %}
+
+{% block header_title %}Admin Management{% endblock %}
+
+{% block content %}
+<section class="admin-section">
+    <div class="container">
+        <h2 class="mb-4">Add New User</h2>
+        <form method="post" action="{% url 'admin_management' %}" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    {{ form.username }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="email" class="form-label">Email address</label>
+                    {{ form.email }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="first_name" class="form-label">First name</label>
+                    {{ form.first_name }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="last_name" class="form-label">Last name</label>
+                    {{ form.last_name }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    {{ form.password }}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="groups" class="form-label">Groups</label>
+                    {{ form.groups }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="user_permissions" class="form-label">Permissions</label>
+                    {{ form.user_permissions }}
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Add User</button>
+        </form>
+        <h2 class="mt-5">Existing Users</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Groups</th>
+                    <th>Permissions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in page_obj %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>
+                        {% for group in user.groups.all %}
+                            {{ group.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for perm in user.user_permissions.all %}
+                            {{ perm.name }}{% if not forloop.last %}, {% endif %}
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?page=1">&laquo; first</a>
+                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                {% endif %}
+
+                <span class="current">
+                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}">next</a>
+                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+        </div>
+    </div>
+</section>
+{% endblock %}

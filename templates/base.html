@@ -1,0 +1,193 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Analytics Dashboard{% endblock %}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f4f9;
+            color: #343a40; /* Dark gray for general text */
+        }
+
+        .custom-container {
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #d6e0f0; /* Light blue */
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Align items to the top */
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5em;
+            color: #343a40; /* Dark gray text for contrast */
+        }
+
+        .sidebar-icon {
+            width: 200px;
+            height: auto;
+            margin: 10px auto;
+        }
+
+        .menu {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            width: 100%;
+        }
+
+        .menu li {
+            padding: 15px 20px;
+        }
+
+        .menu li a {
+            color: #343a40; /* Dark gray text */
+            text-decoration: none;
+            display: block;
+        }
+
+        .menu li a:hover {
+            background: #c0d0e0; /* Slightly darker blue */
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            background: #f4f4f9;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #343a40; /* Dark gray text */
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .date-filter select {
+            padding: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            color: #343a40; /* Dark gray text */
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-sizing: border-box;
+            position: relative;
+            color: #343a40; /* Dark gray text */
+        }
+
+        .stat-card h3 {
+            margin: 0 0 10px;
+        }
+
+        .stat-card p {
+            font-size: 2em;
+            margin: 0 0 10px;
+        }
+
+        .stat-card .chart {
+            height: 400px; /* Increased height for better visibility */
+            width: 100%;
+            overflow: hidden;
+            text-align: left;
+        }
+
+        .stat-card .up {
+            color: green;
+            font-size: 0.8em;
+        }
+
+        .stat-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            text-align: left;
+        }
+
+        .stat-card ul li {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+    </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</head>
+<body>
+    <div class="custom-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="{% static 'images/headlines.png' %}" alt="Logo" class="sidebar-icon">
+            </div>
+            <ul class="menu">
+                <li><a href="{% url 'Analytics' %}"><i class="fas fa-tachometer-alt" style="margin-right: 10px;"></i><strong>Dashboard</strong></a></li>
+                <li><a href="{% url 'orders_management' %}"><i class="fas fa-box" style="margin-right: 10px;"></i><strong>Orders</strong></a></li>
+                <li><a href="{% url 'plans_management' %}"><i class="fas fa-clipboard-list" style="margin-right: 10px;"></i><strong>Plans</strong></a></li>
+                <li><a href="{% url 'users_management' %}"><i class="fas fa-users" style="margin-right: 10px;"></i><strong>Users</strong></a></li>
+                <li><a href="{% url 'admin_management' %}"><i class="fas fa-user-shield" style="margin-right: 10px;"></i><strong>Admin</strong></a></li>
+                <li><a href="{% url 'logout' %}"><i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i><strong>Logout</strong></a></li>
+            </ul>
+        </aside>
+        <main class="main-content">
+            <header class="header">
+                <h1>{% block header_title %}Dashboard{% endblock %}</h1>
+                <div class="date-filter">
+                    <form method="get" action="{% block date_filter_action %}{% endblock %}">
+                        <select name="date_filter" onchange="this.form.submit()">
+                            <option value="30" {% if date_filter == '30' %}selected{% endif %}>Last 30 Days</option>
+                            <option value="7" {% if date_filter == '7' %}selected{% endif %}>Last 7 Days</option>
+                            <option value="1" {% if date_filter == '1' %}selected{% endif %}>Today</option>
+                        </select>
+                    </form>
+                </div>
+            </header>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

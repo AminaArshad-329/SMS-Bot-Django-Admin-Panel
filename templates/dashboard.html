@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block header_title %}Dashboard{% endblock %}
+
+{% block date_filter_action %}{% url 'Analytics' %}{% endblock %}
+
+{% block content %}
+<section class="stats">
+    <div class="stat-card">
+        <h3>Visitors live right now</h3>
+        <p>{{ live_website_visitors|default_if_none:"0" }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>In Checkout</h3>
+        <p>{{ checkout_count }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Abandoned carts</h3>
+        <p>{{ abandon_count }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Website visitors</h3>
+        <p>{{ website_visitors|default_if_none:"0" }} <span class="up">+2%</span></p>
+        <div class="chart">{{ plot_website_visitors|safe }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Sales</h3>
+        <p>${{ total_revenue }} <span class="up">+2%</span></p>
+        <div class="chart">{{ plot_sales|safe }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>MRR</h3>
+        <p>${{ mrr|default_if_none:"0" }} <span class="up">+2%</span></p>
+        <div class="chart">{{ plot_mrr|safe }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Active subscribers</h3>
+        <p>{{ active_subscribers|default_if_none:"0" }} <span class="up">+2%</span></p>
+        <div class="chart">{{ plot_active_subscribers|safe }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Unsubscribers</h3>
+        <p>{{ unsubscribers|default_if_none:"0" }} <span class="up">+2%</span></p>
+        <div class="chart">{{ plot_unsubscribers|safe }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Top 5 locations</h3>
+        <ul>
+            {% for location, count in location_dict.items %}
+                <li>{{ location }} <span>{{ count }}</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+</section>
+{% endblock %}
